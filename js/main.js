@@ -1,6 +1,30 @@
 let currentPlayer = 'X';
 let gameBoard = ['', '', '', '', '', '', '', '', ''];
 let gameActive = true;
+let winLine = document.querySelector(".line");
+
+let singlePlayerModeBtn = document.querySelector(".single-player-mode");
+let multiPlayerModeBtn = document.querySelector(".multi-player-mode");
+
+let singlePlayerMode = true;
+
+singlePlayerModeBtn.addEventListener("click", ()=>{
+    if(singlePlayerMode != true){
+        singlePlayerMode = true;
+        singlePlayerModeBtn.classList.add("active");
+        multiPlayerModeBtn.classList.remove("active");
+        reset();
+    }
+})
+
+multiPlayerModeBtn.addEventListener("click", ()=>{
+    if(singlePlayerMode == true){
+        singlePlayerMode = false;
+        multiPlayerModeBtn.classList.add("active");
+        singlePlayerModeBtn.classList.remove("active");
+        reset();
+    }
+})
 
 const board = document.getElementById("board");
 for(let i = 0; i<9; i++){
@@ -19,22 +43,31 @@ function handleClick(e){
     }
     gameBoard[cellIndex] = currentPlayer;
     cell.innerText = currentPlayer;
-    if(checkWinner()){
-        document.querySelector(".status").innerText =  `Player ${currentPlayer} Won`
+    let winner = checkWinner();
+    if(winner){
+        if(singlePlayerMode){
+            document.querySelector(".status").innerText =  `${currentPlayer == "X" ? "You " : "Computer "} Won`
+        }else{
+            document.querySelector(".status").innerText =  `Player ${currentPlayer} Won`
+        }
         gameActive = !gameActive; 
         highLightWinner();
-        board.classList.add("game-over");
+        line(winner);
         return;
     }
     if(checkDraw()){
         document.querySelector(".status").innerText =  `It's a draw!`
         gameActive = !gameActive;
-        board.classList.add("game-over");
         return;
     }
     currentPlayer = currentPlayer == "X" ? "O" : "X";
-    document.querySelector(".status").innerText =  `Player ${currentPlayer}'s turn`;
-    computerPlay();
+
+    if(singlePlayerMode){
+        document.querySelector(".status").innerText =  `Computer's turn`;
+        setTimeout(() => { computerPlay() }, 500);
+    }else{
+        document.querySelector(".status").innerText =  `Player ${currentPlayer}'s turn`;
+    }
 }
 
 function checkWinner(){
@@ -43,6 +76,13 @@ function checkWinner(){
         [0, 3, 6], [1, 4, 7], [2, 5, 8],
         [0, 4, 8], [2, 4, 6]
     ]
+
+    for(const combination of winningPattern){
+        const [a, b, c] = combination;
+        if(gameBoard[a] !== "" && gameBoard[a] == gameBoard[b] && gameBoard[a] == gameBoard[c]){
+            return combination;
+        }
+    }
 
     return winningPattern.some((combination)=>{
         const [a, b, c] = combination;
@@ -72,7 +112,9 @@ function highLightWinner(){
     }
 }
 
-document.querySelector('.reset-btn').addEventListener("click", () => {
+document.querySelector('.reset-btn').addEventListener("click", reset);
+
+function reset(){
     currentPlayer = "X";
     gameActive = true;
     gameBoard = ['', '', '', '', '', '', '', '', ''];
@@ -81,28 +123,75 @@ document.querySelector('.reset-btn').addEventListener("click", () => {
         item.innerText = "";
         item.classList.remove("winning-cell");
     })
-    board.classList.remove("game-over");
-    document.querySelector(".status").innerText =  `Player ${currentPlayer}'s turn`;
-})
+    winLine.style.display = "none";
+    winLine.style.transform = "unset";
+    winLine.style.width = "100%";
+    winLine.style.left = "unset";
+    winLine.style.right = "unset";
+    winLine.style.top = "unset";
+    winLine.style.bottom = "unset";
+    if(singlePlayerMode){
+        document.querySelector(".status").innerText =  `Your turn`;
+    }else{
+        document.querySelector(".status").innerText =  `Player ${currentPlayer}'s turn`;
+    }
+}
 
 
 function computerPlay(){
     let pos = gameBoard.indexOf("");
     gameBoard[pos] = currentPlayer;
     document.querySelector(`[data-index="${pos}"]`).innerText = currentPlayer;
-    currentPlayer = currentPlayer == "X" ? "O" : "X";
-    document.querySelector(".status").innerText =  `Player ${currentPlayer}'s turn`;
-    if(checkWinner()){
-        document.querySelector(".status").innerText =  `Player ${currentPlayer} Won`
+    let winner = checkWinner()
+    if(winner){
+        document.querySelector(".status").innerText =  `${currentPlayer == "X" ? "You " : "Computer "} Won`
         gameActive = !gameActive; 
         highLightWinner();
-        board.classList.add("game-over");
+        line(winner);
         return;
     }
     if(checkDraw()){
         document.querySelector(".status").innerText =  `It's a draw!`
         gameActive = !gameActive;
-        board.classList.add("game-over");
         return;
+    }
+    currentPlayer = currentPlayer == "X" ? "O" : "X";
+    document.querySelector(".status").innerText =  `Your turn`;
+}
+
+function line(combination){
+    const [a, b, c] = combination;
+    winLine.style.display = "block";
+
+    if (a === 0 && b === 1 && c === 2) {
+        winLine.style.top = "50px";
+    } else if (a === 3 && b === 4 && c === 5) {
+        winLine.style.top = "155px";
+        winLine.style.left = "0px";
+    } else if (a === 6 && b === 7 && c === 8) {
+        winLine.style.top = "260px";
+        winLine.style.left = "0px";
+    }else if (a === 0 && b === 3 && c === 6) {
+        winLine.style.top = "157px";
+        winLine.style.left = "-105px";
+        winLine.style.transform = "rotate(90deg)";
+    } else if (a === 1 && b === 4 && c === 7) {
+        winLine.style.top = "157px";
+        winLine.style.transform = "rotate(90deg)";
+    } else if (a === 2 && b === 5 && c === 8) {
+        winLine.style.top = "157px";
+        winLine.style.left = "105px";
+        winLine.style.transform = "rotate(90deg)";
+    }else if (a === 0 && b === 4 && c === 8) {
+        winLine.style.width = "400px";
+        winLine.style.top = "155px";
+        winLine.style.left = "-40px";
+        winLine.style.transform = "rotate(45deg)";
+    } else if (a === 2 && b === 4 && c === 6) {
+        winLine.style.width = "400px";
+        winLine.style.top = "155px";
+        winLine.style.left = "-40px";
+        winLine.style.transform = "rotate(-45deg)";
+
     }
 }

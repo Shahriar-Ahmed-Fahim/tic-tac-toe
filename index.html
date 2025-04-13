@@ -8,10 +8,14 @@
 </head>
 <body>
     <h1 class="title">Tic Tac Toe</h1>
-
-    <div class="board" id="board">
+    <div class="mode-container">
+        <button class="single-player-mode active">Single Player Mode</button>
+        <button class="multi-player-mode">Multi Player Mode</button>
     </div>
-    <div class="status">Player X's turn</div>
+    <div class="board" id="board">
+        <div class="line"></div>
+    </div>
+    <div class="status">Your turn</div>
     <button class="reset-btn">Reset Game</button>
 
     <script src="js/main.js"></script>
