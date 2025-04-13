@@ -34,6 +34,7 @@ function handleClick(e){
     }
     currentPlayer = currentPlayer == "X" ? "O" : "X";
     document.querySelector(".status").innerText =  `Player ${currentPlayer}'s turn`;
+    computerPlay();
 }
 
 function checkWinner(){
@@ -83,3 +84,25 @@ document.querySelector('.reset-btn').addEventListener("click", () => {
     board.classList.remove("game-over");
     document.querySelector(".status").innerText =  `Player ${currentPlayer}'s turn`;
 })
+
+
+function computerPlay(){
+    let pos = gameBoard.indexOf("");
+    gameBoard[pos] = currentPlayer;
+    document.querySelector(`[data-index="${pos}"]`).innerText = currentPlayer;
+    currentPlayer = currentPlayer == "X" ? "O" : "X";
+    document.querySelector(".status").innerText =  `Player ${currentPlayer}'s turn`;
+    if(checkWinner()){
+        document.querySelector(".status").innerText =  `Player ${currentPlayer} Won`
+        gameActive = !gameActive; 
+        highLightWinner();
+        board.classList.add("game-over");
+        return;
+    }
+    if(checkDraw()){
+        document.querySelector(".status").innerText =  `It's a draw!`
+        gameActive = !gameActive;
+        board.classList.add("game-over");
+        return;
+    }
+}
