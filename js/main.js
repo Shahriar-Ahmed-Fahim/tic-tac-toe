@@ -64,6 +64,9 @@ function handleClick(e){
 
     if(singlePlayerMode){
         document.querySelector(".status").innerText =  `Computer's turn`;
+        document.querySelectorAll('.cell').forEach(cell => {
+            cell.disabled = true;
+        });
         setTimeout(() => { computerPlay() }, 500);
     }else{
         document.querySelector(".status").innerText =  `Player ${currentPlayer}'s turn`;
@@ -130,6 +133,9 @@ function reset(){
     winLine.style.right = "unset";
     winLine.style.top = "unset";
     winLine.style.bottom = "unset";
+    document.querySelectorAll('.cell').forEach(cell => {
+        cell.disabled = false;
+    });
     if(singlePlayerMode){
         document.querySelector(".status").innerText =  `Your turn`;
     }else{
@@ -157,6 +163,10 @@ function computerPlay(){
     }
     currentPlayer = currentPlayer == "X" ? "O" : "X";
     document.querySelector(".status").innerText =  `Your turn`;
+
+    document.querySelectorAll('.cell').forEach(cell => {
+        cell.disabled = false;
+    });
 }
 
 function line(combination){
